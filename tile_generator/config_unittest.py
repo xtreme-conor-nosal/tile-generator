@@ -677,7 +677,7 @@ class TestTileSimpleFields(BaseTest):
 
 class TestKiboshType(BaseTest):
 	def test_kibosh_jobs(self):
-		self.config['packages'] = [{'name': 'spacebears', 'type': 'kibosh', 'helm_chart_dir': 'example-chart'}]
+		self.config['packages'] = [{'name': 'spacebears', 'type': 'kibosh', 'helm_chart_dir': 'sample/example-chart'}]
 		self.config.validate()
 		tile_metadata = TileMetadata(self.config).build()
 
@@ -687,6 +687,15 @@ class TestKiboshType(BaseTest):
                 loader_is_errand = [job.get('errand') for job in tile_metadata['job_types'] if job.get('name') == 'loader'][0]
                 self.assertTrue(loader_is_errand)
 
+class TestHelmType(BaseTest):
+	def test_helm_jobs(self):
+		self.config['packages'] = [{'name': 'spacebears', 'type': 'helm', 'path': 'sample/example-chart'}]
+		self.config.validate()
+		tile_metadata = TileMetadata(self.config).build()
+
+		actual_jobs = [job['name'] for job in tile_metadata['job_types']]
+		expected_jobs = ['deploy-charts', 'delete-charts']
+		self.assertEqual(sorted(actual_jobs), sorted(expected_jobs))
 
 class TestTileIconFile(BaseTest):
 	def test_requires_icon_file(self):

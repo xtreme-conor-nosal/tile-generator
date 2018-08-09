@@ -366,6 +366,27 @@ class Helm(FlagBase):
 class Kibosh(FlagBase):
     @classmethod
     def _apply(self, config_obj, package, release):
+        # Read the helm chart and bundle all required docker images
+
+        chart_info = helm.get_chart_info(package['helm_chart_dir'])
+        for image in chart_info['required_images']:
+            image_name = image.split('/')[-1]
+            image_package_name = package['name'] + '-images'
+            image_packages = [p for p in release['packages'] if p['name'] == image_package_name]
+            if image_packages:
+                image_package = image_packages[0]
+            else:
+                image_package = {
+                    'name': image_package_name,
+                    'files': [],
+                    'dir': 'blobs'
+                }
+                release['packages'] += [image_package]
+            image_package['files'] += [{
+                'name': image_name,
+                'path': 'docker:' + image
+            }]
+
         packagename = package['name']
 
         # For now we assume that the form and property values are shared.
@@ -578,6 +599,10 @@ class Kibosh(FlagBase):
                 }
             ],
         }
+
+        for imageFiles in image_package['files']:
+            charts_to_disk_pkg['files'] += [imageFiles]
+
         release['jobs'] += [{
             'name': 'charts_for_%s' % packagename,
             'type': 'charts_for_%s' % packagename,
