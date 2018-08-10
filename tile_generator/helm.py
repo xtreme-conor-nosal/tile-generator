@@ -32,17 +32,32 @@ def find_required_images(values):
 
 def get_chart_info(chart_dir):
     chart_file = os.path.join(chart_dir, 'Chart.yaml')
-    with open(chart_file) as f:
-        chart = yaml.safe_load(f)
-    values_file = os.path.join(chart_dir, 'values.yaml')
-    with open(values_file) as f:
-        chart_values = yaml.safe_load(f)
+    # If Chart.yaml exists here we have a single chart
+    if os.path.isfile(chart_file):
+        with open(chart_file) as f:
+            chart = yaml.safe_load(f)
+        values_file = os.path.join(chart_dir, 'values.yaml')
+        with open(values_file) as f:
+            chart_values = yaml.safe_load(f)
 
-    return {
-        'name': chart.get('name', chart.get('Name')),
-        'version': chart.get('version', chart.get('Version')),
-        'required_images': find_required_images(chart_values),
-    }
+        return {
+            'name': chart.get('name', chart.get('Name')),
+            'version': chart.get('version', chart.get('Version')),
+            'required_images': find_required_images(chart_values),
+        }
+    # Assume we have multiple charts. Each chart will be in a subdir
+    else:
+        imagelist = []
+        subdir_list = next(os.walk(chart_dir))[1]
+        for subdir in subdir_list:
+            values_file = os.path.join(chart_dir, subdir, 'values.yaml')
+            with open(values_file) as f:
+                chart_values = yaml.safe_load(f)
+                imagelist += find_required_images(chart_values)
+
+        return {
+            'required_images': imagelist,
+        }
 
 def get_latest_release_tag():
     result = requests.get('https://api.github.com/repos/kubernetes/helm/releases/latest')
@@ -58,4 +73,4 @@ def get_latest_kubectl_tag():
 
 if __name__ == '__main__':
     for chart in sys.argv[1:]:
-        print(json.dumps(get_chart_info(chart), indent=4))
+        print(json.dumps(get_chart_images(chart), indent=4))
