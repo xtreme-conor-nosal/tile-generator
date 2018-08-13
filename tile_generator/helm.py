@@ -50,6 +50,8 @@ def get_chart_info(chart_dir):
         imagelist = []
         subdir_list = next(os.walk(chart_dir))[1]
         for subdir in subdir_list:
+            if subdir == 'images':
+                continue
             values_file = os.path.join(chart_dir, subdir, 'values.yaml')
             with open(values_file) as f:
                 chart_values = yaml.safe_load(f)
