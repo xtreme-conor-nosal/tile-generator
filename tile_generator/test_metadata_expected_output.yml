@@ -1222,8 +1222,8 @@ job_types:
     runtime_test_release:
       name: runtime_test_release
     security:
-      password: (( .docker-bosh-tg_test_app4.app_credentials.password ))
-      user: (( .docker-bosh-tg_test_app4.app_credentials.identity ))
+      password: (( .deploy-all.app_credentials.password ))
+      user: (( .deploy-all.app_credentials.identity ))
     space: (( .properties.space.value ))
     ssl:
       skip_cert_verify: (( ..cf.ha_proxy.skip_cert_verify.value ))
@@ -1247,13 +1247,9 @@ job_types:
     tg_test_broker1:
       enable_global_access_to_plans: (( .properties.tg_test_broker1_enable_global_access_to_plans.value ))
       name: tg_test_broker1
-      password: (( .docker-bosh-tg_test_app4.app_credentials.password ))
-      user: (( .docker-bosh-tg_test_app4.app_credentials.identity ))
     tg_test_broker2:
       enable_global_access_to_plans: (( .properties.tg_test_broker2_enable_global_access_to_plans.value ))
       name: tg_test_broker2
-      password: (( .docker-bosh-tg_test_app4.app_credentials.password ))
-      user: (( .docker-bosh-tg_test_app4.app_credentials.identity ))
     tg_test_buildpack:
       buildpack_order: (( .properties.tg_test_buildpack_buildpack_order.value ))
       name: tg_test_buildpack
@@ -1272,8 +1268,6 @@ job_types:
   - default:
       identity: vcap
     name: vm_credentials
-    type: salted_credentials
-  - name: app_credentials
     type: salted_credentials
   resource_definitions:
   - configurable: true
@@ -1615,8 +1609,6 @@ job_types:
   - default:
       identity: vcap
     name: vm_credentials
-    type: salted_credentials
-  - name: app_credentials
     type: salted_credentials
   resource_definitions:
   - configurable: true

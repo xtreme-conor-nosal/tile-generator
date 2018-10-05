@@ -322,13 +322,6 @@ class Config(dict):
 			'apply_open_security_group': '(( .properties.apply_open_security_group.value ))',
 			'allow_paid_service_plans': '(( .properties.allow_paid_service_plans.value ))',
 		}
-		if job.get('type') == 'deploy-all':
-			merge_dict(manifest, {
-				'security': {
-					'user': '(( .{}.app_credentials.identity ))'.format(job['name']),
-					'password': '(( .{}.app_credentials.password ))'.format(job['name']),
-				}
-			})
 		if job.get('type') == 'deploy-charts':
 			merge_dict(manifest, {
 				'pks_username': '(( ..pivotal-container-service.properties.pks_basic_auth.identity ))',
@@ -350,7 +343,7 @@ class Config(dict):
 						'password': '(( .properties.{}_password.value ))'.format(package['name']),
 					}
 				})
-			elif job.get('type') == 'deploy-all' and Broker in package_flags:
+                        elif job.get('type') == 'deploy-all':
 				merge_dict(manifest, {
 					package['name']: {
 						'user': '(( .{}.app_credentials.identity ))'.format(job['name']),

@@ -428,10 +428,6 @@ class TileMetadata(object):
                             'default': {'identity': 'vcap'},
                             'name': 'vm_credentials',
                             'type': 'salted_credentials'},
-                        {
-                            'name': 'app_credentials',
-                            'type': 'salted_credentials'
-                        }
                     ]
                 }
 
@@ -467,11 +463,6 @@ class TileMetadata(object):
                             'url': '(( .properties.' + pkg_name + '_url.value ))',
                             'user': '(( .' + pkg_name + '_user.value ))',
                             'password': '(( .' + pkg_name + '_password.value ))',
-                        })
-                    elif package.get('is_broker'):
-                        pkg_manifest.update({
-                            'user': '(( .' + job.get('name') + '.app_credentials.identity ))',
-                            'password': '(( .' + job.get('name') + '.app_credentials.password ))',
                         })
 
                     if package.get('is_broker'):
